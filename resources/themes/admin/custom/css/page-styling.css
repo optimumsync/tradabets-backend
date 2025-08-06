@@ -1,0 +1,60 @@
+
+/* -- page-header -- */
+.card-header.has-actions .card-title {
+
+}
+.card-header.has-actions .dropdown-menu {
+    padding: 0;
+}
+.card-header.has-actions .dropdown-menu .dropdown-item {
+    font-size: 0.8rem;
+}
+
+/* -- tabs -- */
+.nav-tabs .nav-item.disabled .nav-link {
+    border-top: 3px solid #EEE;
+    color: #CCC;
+}
+.nav-tabs .nav-item.disabled .nav-link:hover,
+.nav-tabs .nav-item.disabled .nav-link:active,
+.nav-tabs .nav-item.disabled .nav-link:visited {
+    border-top: 3px solid #EEE;
+    color: #CCC;
+}
+html body .tabs .tabs-secondary.tabs-vertical.tabs-left li.active .nav-link,
+html body .tabs .tabs-secondary.tabs-vertical.tabs-left li.active .nav-link:hover,
+html body .tabs .tabs-secondary.tabs-vertical.tabs-left li .nav-link:hover,
+html body .tabs .tabs-secondary.tabs-vertical.tabs-left li.active .nav-link:focus {
+    border-left-color: #e36159;
+}
+
+/* -- api -- */
+.api-response-container {
+    border: solid 1px #CCC;
+    -webkit-border-radius: 5px 5px 5px 5px;
+    border-radius: 5px 5px 5px 5px;
+    background-color: #FAFAFA;
+    color: #333;
+    padding: 10px;
+    height: 350px;
+    max-height: 350px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    display: none;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+.api-response-container.success {
+    background-color: #F0F9E9;
+}
+
+
+/* -- elements -- */
+.no-pad        { padding: 0; }
+.no-mrg        { margin: 0; }
+
+hr.section {
+    border: 0;
+    border-bottom: 1px dashed #0088cc;
+    background-image: none;
+}

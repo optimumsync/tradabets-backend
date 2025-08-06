@@ -1,0 +1,1 @@
+[14-Feb-2024 10:10:21 UTC] PHP Fatal error:  Allowed memory size of 134217728 bytes exhausted (tried to allocate 98570240 bytes) in /home/klwd8tk1cfeq/public_html/tradabets.com/app/Http/Controllers/API/V1/UserApiController.php on line 17

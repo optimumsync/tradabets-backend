@@ -274,7 +274,12 @@ return [
             'uri' => '/betlist-cashout',
             'title' => '<span>Bet List Cashout</span>',
             'prepend-title' => '<img class="user-menu-icons" src="/themes/admin/img/betlistcashout.png"/>',
-        ]
+       ],
+         [
+            'uri' => '/charts',
+            'title' => '<span>Charts</span>',
+            'prepend-title' => '<img class="user-menu-icons" src="/themes/admin/img/betlistcashout.png"/>',
+       ],
 
         ],
 

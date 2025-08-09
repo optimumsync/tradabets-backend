@@ -11,10 +11,8 @@
     box-shadow: 0 10px 25px -10px rgba(0, 0, 0, 0.15);
     border: none;
     overflow: hidden;
-    /* Important for containing the banner */
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     position: relative;
-    /* For positioning the toggle switch */
 }
 
 .user-card-v2:hover {
@@ -22,67 +20,38 @@
     box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.2);
 }
 
-/* Top banner section */
-.card-header-banner {
-    background: #f6f6f6;
-    /* Fallback color from theme */
-    background: linear-gradient(135deg, #ecedf0 0%, #fdfdfd 100%);
-    height: 100px;
+/* REMOVED: Banner styles are no longer needed for this compact design */
+
+.user-card-v2 .card-body {
+    padding-top: 45px;
+    /* Added padding to prevent content from going under the toggle */
 }
 
-.card-body.text-center {
-    padding-top: 0;
-}
+/* REMOVED: Avatar styles are no longer needed */
 
-/* Avatar styling and positioning */
-.profile-image-wrapper {
-    margin-top: -50px;
-    /* Pulls the avatar up over the banner */
-    margin-bottom: 1rem;
-}
-
-.profile-image {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    background-color: #CCC;
-    /* Theme primary color */
-    color: #FFF;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2.5rem;
-    font-weight: 600;
-    border: 4px solid #FFF;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    margin: 0 auto;
-}
-
-/* User info text */
 .card-user-info .name {
     font-size: 1.25rem;
     font-weight: 600;
     color: #33353F;
-    /* From theme */
     margin-bottom: 0.25rem;
 }
 
 .card-user-info .email {
     color: #777;
-    /* From theme */
     font-size: 0.9rem;
+    /* Ensures long text breaks to prevent overflowing the card */
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
-/* Stats section (Role, Member Since) */
 .user-stats {
     display: flex;
     justify-content: space-around;
-    padding: 1rem 0;
+    /* Reduced vertical padding to decrease card height */
+    padding: 0.75rem 0;
     margin: 1rem 0;
     border-top: 1px solid #ecedf0;
-    /* From theme */
     border-bottom: 1px solid #ecedf0;
-    /* From theme */
 }
 
 .user-stats .stat {
@@ -102,7 +71,6 @@
     letter-spacing: 0.5px;
 }
 
-/* Positioning the toggle switch */
 .card-status-toggle {
     position: absolute;
     top: 15px;
@@ -113,9 +81,9 @@
 
 <div class="row">
     @forelse($user_list as $user)
-    {{-- THIS IS THE MODIFIED LINE --}}
-    <div class="col-md-6 col-lg-4 col-xl-3">
-        <div class="card card-admin user-card-v2 mb-4">
+    {{-- MODIFIED: Reduced bottom margin from mb-3 to mb-2 to further decrease the gap between rows --}}
+    <div class="col-md-6 col-lg-4 col-xl-3 mb-1">
+        <div class="card card-admin user-card-v2">
 
             <div class="card-status-toggle">
                 <div class="switch switch-sm switch-primary">
@@ -124,14 +92,8 @@
                 </div>
             </div>
 
-            <div class="card-header-banner"></div>
-
-            <div class="card-body text-center">
-                <div class="profile-image-wrapper">
-                    <div class="profile-image">
-                        <span>{{ strtoupper(substr($user->first_name, 0, 1)) }}</span>
-                    </div>
-                </div>
+            <div class="card-body">
+                {{-- The profile image has been removed as per the previous request --}}
 
                 <div class="card-user-info">
                     <h4 class="name">{{ $user->first_name }} {{ $user->last_name }}</h4>
@@ -150,17 +112,19 @@
                     </div>
                 </div>
 
-                <div class="btn-group-vertical" style="width: 100%;">
-                    <a href="#modal-details-{{ $user->id }}" class="btn btn-primary modal-trigger"><i
+                {{-- Reduced top margin to mt-2 and changed to smaller buttons (btn-sm) --}}
+                <div class="btn-group-vertical mt-1" style="width: 100%;">
+                    <a href="#modal-details-{{ $user->id }}" class="btn btn-sm btn-primary modal-trigger"><i
                             class="fas fa-eye mr-2"></i> View Full Details</a>
-                    <a href="#" class="btn btn-default"><i class="fas fa-university mr-2"></i> Bank Details</a>
-                    <a href="#" class="btn btn-default"><i class="fas fa-gift mr-2"></i> Add Bonus</a>
-                    <a href="#" class="btn btn-default"><i class="fas fa-key mr-2"></i> Reset Password</a>
+                    <a href="#modal-bank-details-{{ $user->id }}" class="btn btn-sm btn-default modal-trigger"><i
+                            class="fas fa-university mr-2"></i> Bank Details</a>
+                    <a href="#" class="btn btn-sm btn-default"><i class="fas fa-gift mr-2"></i> Add Bonus</a>
+                    <a href="#" class="btn btn-sm btn-default"><i class="fas fa-key mr-2"></i> Reset Password</a>
                 </div>
             </div>
         </div>
 
-        {{-- Modal - This part remains the same as it's correctly styled by your theme --}}
+        {{-- User Details Modal --}}
         <div id="modal-details-{{ $user->id }}" class="modal-block modal-block-primary mfp-hide">
             <section class="card card-admin">
                 <header class="card-header">
@@ -173,39 +137,71 @@
                     <dl class="row">
                         <dt class="col-sm-4 text-sm-right">User ID:</dt>
                         <dd class="col-sm-8">#{{ $user->id }}</dd>
-
                         <dt class="col-sm-4 text-sm-right">Full Name:</dt>
                         <dd class="col-sm-8">{{ $user->first_name }} {{ $user->last_name }}</dd>
-
                         <dt class="col-sm-4 text-sm-right">Email Address:</dt>
                         <dd class="col-sm-8">{{ $user->email }}</dd>
-
                         <dt class="col-sm-4 text-sm-right">Phone Number:</dt>
                         <dd class="col-sm-8">{{ $user->country_code }} {{ $user->phone }}</dd>
-
-                        <dt class="col-sm-4 text-sm-right">Date of Birth:</dt>
-                        <dd class="col-sm-8">
-                            {{ $user->date_of_birth ? \Carbon\Carbon::parse($user->date_of_birth)->format('F j, Y') : 'Not provided' }}
-                        </dd>
-
-                        <dt class="col-sm-4 text-sm-right">Address:</dt>
-                        <dd class="col-sm-8">
-                            {{ $user->city ? $user->city . ', ' . $user->state . ', ' . $user->country : 'Not provided' }}
-                        </dd>
-
                         <dt class="col-sm-4 text-sm-right">User Role:</dt>
                         <dd class="col-sm-8">
                             <span class="badge badge-primary text-capitalize">{{ $user->role }}</span>
                         </dd>
-
                         <dt class="col-sm-4 text-sm-right">Member Since:</dt>
                         <dd class="col-sm-8">{{ $user->created_at->format('F j, Y \a\t H:i A') }}</dd>
                     </dl>
                 </div>
                 <footer class="card-footer text-right">
-                    <button class="btn btn-default modal-dismiss">
-                        <i class="fas fa-times"></i> Close
-                    </button>
+                    <button class="btn btn-default modal-dismiss">Close</button>
+                </footer>
+            </section>
+        </div>
+
+        {{-- Bank Details Modal --}}
+        <div id="modal-bank-details-{{ $user->id }}" class="modal-block modal-block-primary mfp-hide">
+            <section class="card card-admin">
+                <header class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-university"></i>
+                        Bank Accounts for {{ $user->first_name }}
+                    </h2>
+                </header>
+                <div class="card-body">
+                    @forelse($user->userBankDetails as $bankAccount)
+                    <div class="bank-account-entry">
+                        <dl class="row">
+                            <dt class="col-sm-4 text-sm-right">Status:</dt>
+                            <dd class="col-sm-8">
+                                @if($bankAccount->Active_status == 'Active')
+                                <span class="badge badge-success">Active</span>
+                                @else
+                                <span class="badge badge-dark">Inactive</span>
+                                @endif
+                            </dd>
+                            <dt class="col-sm-4 text-sm-right">Bank Name:</dt>
+                            <dd class="col-sm-8">{{ $bankAccount->bank_name }}</dd>
+                            <dt class="col-sm-4 text-sm-right">Account Name:</dt>
+                            <dd class="col-sm-8">{{ $bankAccount->account_name }}</dd>
+                            <dt class="col-sm-4 text-sm-right">Account Number:</dt>
+                            <dd class="col-sm-8 font-weight-bold">{{ $bankAccount->account_number }}</dd>
+                            <dt class="col-sm-4 text-sm-right">Added On:</dt>
+                            <dd class="col-sm-8">{{ $bankAccount->created_at->format('M j, Y') }}</dd>
+                        </dl>
+                    </div>
+
+                    {{-- Add a separator line if this is NOT the last account --}}
+                    @if(!$loop->last)
+                    <hr class="my-2">
+                    @endif
+
+                    @empty
+                    <div class="text-center">
+                        <p class="text-muted">No bank accounts have been added for this user.</p>
+                    </div>
+                    @endforelse
+                </div>
+                <footer class="card-footer text-right">
+                    <button class="btn btn-default modal-dismiss">Close</button>
                 </footer>
             </section>
         </div>
@@ -223,7 +219,6 @@
     </div>
     @endforelse
 </div>
-
 @endsection
 
 @push('scripts')

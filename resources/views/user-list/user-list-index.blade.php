@@ -4,7 +4,7 @@
 
 @section('main-content')
 
-{{-- CSS for the new attractive user card design --}}
+{{-- CSS for the attractive user card design --}}
 <style>
 .user-card-v2 {
     border-radius: 15px;
@@ -113,7 +113,8 @@
 
 <div class="row">
     @forelse($user_list as $user)
-    <div class="col-md-6 col-xl-4">
+    {{-- THIS IS THE MODIFIED LINE --}}
+    <div class="col-md-6 col-lg-4 col-xl-3">
         <div class="card card-admin user-card-v2 mb-4">
 
             <div class="card-status-toggle">

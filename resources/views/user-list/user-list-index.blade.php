@@ -111,6 +111,15 @@
 }
 </style>
 
+{{-- ADD THIS DIV FOR THE EXPORT BUTTON --}}
+<div class="row mb-3">
+    <div class="col-12 text-right">
+        <a href="{{ route('users.export.csv') }}" class="btn btn-success">
+            <i class="fas fa-download mr-2"></i> Export All Users
+        </a>
+    </div>
+</div>
+
 <div class="row">
     @forelse($user_list as $user)
     <div class="col-md-6 col-xl-4">

@@ -15,7 +15,9 @@ use App\Http\Controllers\API\V1\ForgotApiController;
 use App\Http\Controllers\API\V1\PaymentController;
 use App\User;
 
-
+Route::get('/ping', function () {
+    return response()->json(['message' => 'API is working! ✅']);
+});
 
 
 /*

@@ -280,6 +280,12 @@ return [
             'title' => '<span>Charts</span>',
             'prepend-title' => '<img class="user-menu-icons" src="/themes/admin/img/betlistcashout.png"/>',
        ],
+       [
+    'uri' => '/withdraw-list',
+    'prepend-title' => '<i class="fas fa-money-bill-alt" aria-hidden="true"></i>',
+    'title' => '<span>Withdrawal List</span>',
+],
+       
 
         ],
 

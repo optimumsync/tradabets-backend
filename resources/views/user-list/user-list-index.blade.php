@@ -38,7 +38,8 @@
 
 .card-user-info .email {
     color: #777;
-    font-size: 0.9rem;
+    /* MODIFIED: Reduced font size for the email address */
+    font-size: 0.8rem;
     /* Ensures long text breaks to prevent overflowing the card */
     overflow-wrap: break-word;
     word-break: break-word;
@@ -160,15 +161,22 @@
         {{-- Bank Details Modal --}}
         <div id="modal-bank-details-{{ $user->id }}" class="modal-block modal-block-primary mfp-hide">
             <section class="card card-admin">
-                <header class="card-header">
-                    <h2 class="card-title">
+                {{-- MODIFIED: Added flexbox classes to space out the title and the new button --}}
+                <header class="card-header d-flex justify-content-between align-items-center">
+                    <h2 class="card-title mb-0">
                         <i class="fas fa-university"></i>
                         Bank Accounts for {{ $user->first_name }}
                     </h2>
+                    {{-- ADDED: "Add Bank Account" button --}}
+                    <a href="#" class="btn btn-primary btn-sm">
+                        <i class="fas fa-plus mr-1"></i> Add Bank Account
+                    </a>
                 </header>
-                <div class="card-body">
+                {{-- MODIFIED: Added flexbox classes to center the content vertically and horizontally --}}
+                <div class="card-body d-flex flex-column justify-content-center">
                     @forelse($user->userBankDetails as $bankAccount)
-                    <div class="bank-account-entry">
+                    {{-- MODIFIED: Wrapped each entry in a div to manage width and alignment --}}
+                    <div class="bank-account-entry w-100">
                         <dl class="row">
                             <dt class="col-sm-4 text-sm-right">Status:</dt>
                             <dd class="col-sm-8">

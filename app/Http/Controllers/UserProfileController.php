@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use App\User;
-use Illuminate\Support\Facades\Response; // <-- ADD THIS LINE
+use Illuminate\Support\Facades\Response;
 
 class UserProfileController extends Controller
 {
@@ -104,17 +104,55 @@ class UserProfileController extends Controller
         return redirect('/users/profile/' . $user->id);
     }
 
-    public function userList()
+    /**
+     * Build the user query based on request filters.
+     *
+     * @param Request $request
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    private function buildUserQuery(Request $request)
     {
-        $users = User::All();
-        $view_data = ['user_list' => $users];
+        $search = $request->input('search');
+        $query = User::query();
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('first_name', 'LIKE', "%{$search}%")
+                  ->orWhere('last_name', 'LIKE', "%{$search}%")
+                  ->orWhere('email', 'LIKE', "%{$search}%")
+                  ->orWhere('phone', 'LIKE', "%{$search}%");
+            });
+        }
+
+        return $query;
+    }
+
+    /**
+     * Display a paginated and searchable list of users.
+     *
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function userList(Request $request)
+    {
+        $perPage = $request->input('per_page', 24); 
+        $query = $this->buildUserQuery($request);
+
+        // MODIFIED: Changed sorting from latest() to orderBy('id', 'asc')
+        $users = $query->orderBy('id', 'asc')->paginate($perPage);
+
+        // Pass the paginated list and filter values to the view
+        $view_data = [
+            'user_list' => $users->appends($request->except('page')), 
+        ];
+
         return view('user-list.user-list-index', $view_data);
     }
 
     /**
-     * Export all users to a CSV file.
+     * Export all users to a CSV file, ignoring any filters.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
      */
     public function exportUsersToCsv()
     {
@@ -125,8 +163,10 @@ class UserProfileController extends Controller
             "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
             "Expires" => "0"
         ];
+        
+        // MODIFIED: Changed from all() to an ordered query for consistency.
+        $users = User::orderBy('id', 'asc')->get();
 
-        $users = User::all();
         $columns = [
             'id',
             'first_name',
@@ -161,7 +201,7 @@ class UserProfileController extends Controller
                     $user->city,
                     $user->state,
                     $user->country,
-                    $user->role ?? 'N/A', // Assuming a 'role' column exists, otherwise, this will be 'N/A'.
+                    $user->role ?? 'N/A',
                     $user->created_at,
                     $user->updated_at,
                 ]);

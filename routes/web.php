@@ -181,8 +181,7 @@ Route::middleware($middleware)->post('/kyc-list/update/{document}', 'KycControll
 Route::middleware($middleware)->get('/document-show/{id}', 'KycController@show');
 
 //user
-Route::middleware($middleware)->get('/user-list', 'UserProfileController@userList');
-
+Route::middleware($middleware)->get('/user-list', 'UserProfileController@userList')->name('users.list');
     //Inbox
 /*Route::middleware($middleware)->get('/inbox/mark-all-as-read', 'InboxNotificationController@mark_all_as_read');*/
 Route::middleware($middleware)->get('/inbox/message-view/{notification}', 'InboxNotificationController@mark_all_as_read');

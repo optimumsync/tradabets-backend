@@ -74,6 +74,9 @@
 <section class="card card-admin">
     <header class="card-header d-flex justify-content-between align-items-center">
         <h2 class="card-title">User Management</h2>
+        <div class="col-md-6 text-right">
+            <a href="{{ url('kyc-upload-form') }}" class="btn btn-primary" id="txtEdit">Add KYC of User</a>
+        </div>
         <a href="{{ route('users.export.csv') }}{{ request()->has('search') ? '?search='.request('search') : '' }}"
             class="btn btn-success btn-sm">
             <i class="fas fa-download mr-2"></i> Export All Users to CSV
@@ -190,7 +193,7 @@
                                 <i class="fas fa-university"></i>
                                 Bank Accounts for {{ $user->first_name }}
                             </h2>
-                            <a href="#" class="btn btn-primary btn-sm">
+                            <a href="/admin/add-user-bank-account" class="btn btn-primary btn-sm">
                                 <i class="fas fa-plus mr-1"></i> Add Bank Account
                             </a>
                         </header>

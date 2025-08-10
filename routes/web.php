@@ -235,3 +235,6 @@ Route::get('/test-otp-send', function (Request $request) {
 
 // Add this route to your web.php file
 Route::get('/users/export/csv', 'UserProfileController@exportUsersToCsv')->name('users.export.csv');
+
+    Route::get('/admin/add-user-bank-account', 'BankAccountsController@showAdminAddForm');
+    Route::post('/admin/add-user-bank-account', 'BankAccountsController@storeAdminBankAccount');

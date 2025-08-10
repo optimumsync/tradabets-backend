@@ -142,10 +142,23 @@ class User extends Authenticatable implements JWTSubject // <-- ADD 'implements 
     {
         return $this->hasMany('App\kycDocument', 'user_id', 'id');
     }
+
+    /**
+     * Get all of the user's bank accounts.
+     */
     public function userBankDetails()
     {
         return $this->hasMany('App\UserBankDetails', 'user_id', 'id');
     }
+
+    /**
+     * NEW: Get the user's active bank account.
+     */
+    public function activeBankAccount()
+    {
+        return $this->hasOne('App\UserBankDetails', 'user_id', 'id')->where('Active_status', 'Active');
+    }
+
 
     public static function select_list()
     {
@@ -177,5 +190,4 @@ class User extends Authenticatable implements JWTSubject // <-- ADD 'implements 
     {
         return 'id';
     }
-
 }

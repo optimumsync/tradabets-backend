@@ -138,15 +138,28 @@ class UserProfileController extends Controller
         $perPage = $request->input('per_page', 24); 
         $query = $this->buildUserQuery($request);
 
-        // MODIFIED: Changed sorting from latest() to orderBy('id', 'asc')
         $users = $query->orderBy('id', 'asc')->paginate($perPage);
 
-        // Pass the paginated list and filter values to the view
         $view_data = [
             'user_list' => $users->appends($request->except('page')), 
         ];
 
         return view('user-list.user-list-index', $view_data);
+    }
+    
+    /**
+     * Display the specified user's details on a dedicated page.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function showUserDetails($id)
+    {
+        // MODIFIED: 'deposits' was removed from eager loading in a previous step
+        $user = \App\User::with(['userBankDetails', 'withdrawals'])->findOrFail($id);
+
+        // MODIFIED: The view path now correctly points to the file in the 'user-list' subdirectory
+        return view('user-list.user-details', ['user' => $user]);
     }
 
     /**
@@ -164,24 +177,11 @@ class UserProfileController extends Controller
             "Expires" => "0"
         ];
         
-        // MODIFIED: Changed from all() to an ordered query for consistency.
         $users = User::orderBy('id', 'asc')->get();
 
         $columns = [
-            'id',
-            'first_name',
-            'last_name',
-            'date_of_birth',
-            'email',
-            'email_verified_at',
-            'country_code',
-            'phone',
-            'city',
-            'state',
-            'country',
-            'role',
-            'created_at',
-            'updated_at'
+            'id', 'first_name', 'last_name', 'date_of_birth', 'email', 'email_verified_at',
+            'country_code', 'phone', 'city', 'state', 'country', 'role', 'created_at', 'updated_at'
         ];
 
         $callback = function () use ($users, $columns) {
@@ -190,20 +190,10 @@ class UserProfileController extends Controller
 
             foreach ($users as $user) {
                 fputcsv($file, [
-                    $user->id,
-                    $user->first_name,
-                    $user->last_name,
-                    $user->date_of_birth,
-                    $user->email,
-                    $user->email_verified_at,
-                    $user->country_code,
-                    $user->phone,
-                    $user->city,
-                    $user->state,
-                    $user->country,
-                    $user->role ?? 'N/A',
-                    $user->created_at,
-                    $user->updated_at,
+                    $user->id, $user->first_name, $user->last_name, $user->date_of_birth,
+                    $user->email, $user->email_verified_at, $user->country_code, $user->phone,
+                    $user->city, $user->state, $user->country, $user->role ?? 'N/A',
+                    $user->created_at, $user->updated_at,
                 ]);
             }
 

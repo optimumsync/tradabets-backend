@@ -2,7 +2,7 @@
 
 @section('main-content')
 
-{{-- CSS for the attractive user card design --}}
+{{-- CSS for the user cards --}}
 <style>
 .user-card-v2 {
     border-radius: 15px;
@@ -39,7 +39,6 @@
 .user-stats {
     display: flex;
     justify-content: space-around;
-    /* MODIFIED: Reduced padding and margin to decrease internal card gap */
     padding: 0.6rem 0;
     margin: 0.8rem 0;
     border-top: 1px solid #ecedf0;
@@ -74,16 +73,18 @@
 <section class="card card-admin">
     <header class="card-header d-flex justify-content-between align-items-center">
         <h2 class="card-title">User Management</h2>
-        <div class="col-md-6 text-right">
-            <a href="{{ url('kyc-upload-form') }}" class="btn btn-primary" id="txtEdit">Add KYC of User</a>
+        <div>
+            <a href="{{ url('kyc-upload-form') }}" class="btn btn-primary">Add KYC of User</a>
+            <a href="{{ route('users.export.csv') }}{{ request()->has('search') ? '?search='.request('search') : '' }}"
+                class="btn btn-success">
+                <i class="fas fa-download mr-2"></i> Export All Users
+            </a>
         </div>
-        <a href="{{ route('users.export.csv') }}{{ request()->has('search') ? '?search='.request('search') : '' }}"
-            class="btn btn-success btn-sm">
-            <i class="fas fa-download mr-2"></i> Export All Users to CSV
-        </a>
     </header>
 
     <div class="card-body">
+
+        {{-- START: RESTORED SECTION for filtering and search --}}
         <form id="user-filter-form" action="{{ route('users.list') }}" method="GET">
             <div class="row align-items-center justify-content-between mb-4">
                 <div class="col-md-4 col-lg-3">
@@ -111,6 +112,7 @@
                 </div>
             </div>
         </form>
+        {{-- END: RESTORED SECTION --}}
 
         <div class="row">
             @forelse($user_list as $user)
@@ -139,101 +141,12 @@
                             </div>
                         </div>
                         <div class="btn-group-vertical mt-3" style="width: 100%;">
-                            <a href="#modal-details-{{ $user->id }}" class="btn btn-sm btn-primary modal-trigger"><i
-                                    class="fas fa-eye mr-2"></i> View Full Details</a>
-                            <a href="#modal-bank-details-{{ $user->id }}"
-                                class="btn btn-sm btn-default modal-trigger"><i class="fas fa-university mr-2"></i>
-                                Bank Details</a>
-                            <a href="#" class="btn btn-sm btn-default"><i class="fas fa-gift mr-2"></i> Add Bonus</a>
-                            <a href="#" class="btn btn-sm btn-default"><i class="fas fa-key mr-2"></i> Reset
-                                Password</a>
+                            {{-- Button now links to the new details route --}}
+                            <a href="{{ route('users.details', ['id' => $user->id]) }}" class="btn btn-sm btn-primary">
+                                <i class="fas fa-eye mr-2"></i> View Details
+                            </a>
                         </div>
                     </div>
-                </div>
-
-
-                {{-- User Details Modal --}}
-                <div id="modal-details-{{ $user->id }}" class="modal-block modal-block-primary mfp-hide">
-                    <section class="card card-admin">
-                        <header class="card-header">
-                            <h2 class="card-title">
-                                <i class="fas fa-user-circle"></i>
-                                Details for {{ $user->first_name }} {{ $user->last_name }}
-                            </h2>
-                        </header>
-                        <div class="card-body">
-                            <dl class="row">
-                                <dt class="col-sm-4 text-sm-right">User ID:</dt>
-                                <dd class="col-sm-8">#{{ $user->id }}</dd>
-                                <dt class="col-sm-4 text-sm-right">Full Name:</dt>
-                                <dd class="col-sm-8">{{ $user->first_name }} {{ $user->last_name }}</dd>
-                                <dt class="col-sm-4 text-sm-right">Email Address:</dt>
-                                <dd class="col-sm-8">{{ $user->email }}</dd>
-                                <dt class="col-sm-4 text-sm-right">Phone Number:</dt>
-                                <dd class="col-sm-8">{{ $user->country_code }} {{ $user->phone }}</dd>
-                                <dt class="col-sm-4 text-sm-right">User Role:</dt>
-                                <dd class="col-sm-8">
-                                    <span class="badge badge-primary text-capitalize">{{ $user->role }}</span>
-                                </dd>
-                                <dt class="col-sm-4 text-sm-right">Member Since:</dt>
-                                <dd class="col-sm-8">{{ $user->created_at->format('F j, Y \a\t H:i A') }}</dd>
-                            </dl>
-                        </div>
-                        <footer class="card-footer text-right">
-                            <button class="btn btn-default modal-dismiss">Close</button>
-                        </footer>
-                    </section>
-                </div>
-
-                {{-- Bank Details Modal --}}
-                <div id="modal-bank-details-{{ $user->id }}" class="modal-block modal-block-primary mfp-hide">
-                    <section class="card card-admin">
-                        <header class="card-header d-flex justify-content-between align-items-center">
-                            <h2 class="card-title mb-0">
-                                <i class="fas fa-university"></i>
-                                Bank Accounts for {{ $user->first_name }}
-                            </h2>
-                            <a href="/admin/add-user-bank-account" class="btn btn-primary btn-sm">
-                                <i class="fas fa-plus mr-1"></i> Add Bank Account
-                            </a>
-                        </header>
-                        <div class="card-body">
-                            @forelse($user->userBankDetails as $bankAccount)
-                            <div class="bank-account-entry w-100">
-                                <dl class="row">
-                                    <dt class="col-sm-4 text-sm-right">Status:</dt>
-                                    <dd class="col-sm-8">
-                                        @if($bankAccount->Active_status == 'Active')
-                                        <span class="badge badge-success">Active</span>
-                                        @else
-                                        <span class="badge badge-dark">Inactive</span>
-                                        @endif
-                                    </dd>
-                                    <dt class="col-sm-4 text-sm-right">Bank Name:</dt>
-                                    <dd class="col-sm-8">{{ $bankAccount->bank_name }}</dd>
-                                    <dt class="col-sm-4 text-sm-right">Account Name:</dt>
-                                    <dd class="col-sm-8">{{ $bankAccount->account_name }}</dd>
-                                    <dt class="col-sm-4 text-sm-right">Account Number:</dt>
-                                    <dd class="col-sm-8 font-weight-bold">{{ $bankAccount->account_number }}</dd>
-                                    <dt class="col-sm-4 text-sm-right">Added On:</dt>
-                                    <dd class="col-sm-8">{{ $bankAccount->created_at->format('M j, Y') }}</dd>
-                                </dl>
-                            </div>
-
-                            @if(!$loop->last)
-                            <hr class="my-2">
-                            @endif
-
-                            @empty
-                            <div class="text-center p-4">
-                                <p class="text-muted mb-0">No bank accounts have been added for this user.</p>
-                            </div>
-                            @endforelse
-                        </div>
-                        <footer class="card-footer text-right">
-                            <button class="btn btn-default modal-dismiss">Close</button>
-                        </footer>
-                    </section>
                 </div>
             </div>
             @empty
@@ -258,8 +171,7 @@
         <div class="row mt-3 align-items-center">
             <div class="col-sm-12 col-md-5">
                 <div class="dataTables_info" role="status" aria-live="polite">
-                    Showing {{ $user_list->firstItem() }} to {{ $user_list->lastItem() }} of
-                    {{ $user_list->total() }}
+                    Showing {{ $user_list->firstItem() }} to {{ $user_list->lastItem() }} of {{ $user_list->total() }}
                     entries
                 </div>
             </div>
@@ -282,23 +194,6 @@
 @push('scripts')
 <script>
 $(document).ready(function() {
-    // Modal Popup Functionality
-    $('.modal-trigger').magnificPopup({
-        type: 'inline',
-        preloader: false,
-        modal: true,
-        callbacks: {
-            open: function() {
-                $(this.content).parent().addClass('card-admin');
-            }
-        }
-    });
-
-    $(document).on('click', '.modal-dismiss', function(e) {
-        e.preventDefault();
-        $.magnificPopup.close();
-    });
-
     // iOS Switch Functionality
     $(document).on('change', '.switch input[type="checkbox"]', function() {
         const isChecked = $(this).is(':checked');

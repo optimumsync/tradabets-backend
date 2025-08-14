@@ -24,7 +24,7 @@ class User extends Authenticatable implements JWTSubject // <-- ADD 'implements 
     protected $table = 'user';
     protected $fillable = [
         'first_name','last_name','email', 'password','country_code','phone','country','date_of_birth','city','state',
-        'token' // <-- REMOVE 'token' from fillable if it was used for the old custom token system
+        'token'
     ];
     protected $primaryKey = 'id';
 
@@ -35,15 +35,7 @@ class User extends Authenticatable implements JWTSubject // <-- ADD 'implements 
      */
     protected $hidden = [
         'password', 'remember_token',
-        // If you had a 'token' column in your 'user' table for the old system, and you're now using JWT,
-        // you should either remove the 'token' column from your database entirely or keep it hidden
-        // but understand it's NOT used by JWTAuth for authentication.
-        // 'token',
-        // Also consider adding phone_otp and email_otp here if they are directly on the User model
-        // and you want them hidden from JSON responses.
-        // 'phone_otp',
-        // 'email_otp',
-        'google2fa_secret' // If you want to hide the encrypted 2FA secret
+        'google2fa_secret'
     ];
 
     /**
@@ -112,8 +104,6 @@ class User extends Authenticatable implements JWTSubject // <-- ADD 'implements 
      */
     public function tokens()
     {
-        // If this 'tokens' relation was for Laravel Passport or your old custom tokens,
-        // you might need to reconsider its purpose or remove it if no longer needed.
         return $this->hasMany(Token::class);
     }
 
@@ -134,7 +124,9 @@ class User extends Authenticatable implements JWTSubject // <-- ADD 'implements 
     {
         return $this->hasMany('App\Balance', 'user_id', 'id');
     }
-    public function withdraw()
+
+    // MODIFIED: Renamed this method from withdraw() to withdrawals() to match the controller and view.
+    public function withdrawals()
     {
         return $this->hasMany('App\WithdrawRequest', 'user_id', 'id');
     }
@@ -157,6 +149,17 @@ class User extends Authenticatable implements JWTSubject // <-- ADD 'implements 
     public function activeBankAccount()
     {
         return $this->hasOne('App\UserBankDetails', 'user_id', 'id')->where('Active_status', 'Active');
+    }
+
+    // ADDED: This method is required for the user details page to load deposits.
+    /**
+     * Get the deposits for the user.
+     */
+    public function deposits()
+    {
+        // This relationship assumes you have a Deposit model named App\Deposit.
+        // If your model is named differently, please update it here.
+        return $this->hasMany(\App\Deposit::class, 'user_id', 'id');
     }
 
 

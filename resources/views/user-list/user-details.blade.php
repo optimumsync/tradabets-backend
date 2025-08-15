@@ -204,6 +204,22 @@
 </style>
 
 <section class="card card-admin">
+    @if (session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ session('success') }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    @endif
+    @if (session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ session('error') }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    @endif
     <header class="card-header d-flex justify-content-between align-items-center">
         <h2 class="card-title">
             Details for {{ $user->first_name }} {{ $user->last_name }}
@@ -279,8 +295,11 @@
                                         <h5 class="detail-section-title">Management</h5>
                                         <p class="text-muted small">Permanently reset the user's password. This action
                                             cannot be undone.</p>
-                                        <button class="btn btn-danger mt-2"><i class="fas fa-key mr-2"></i> Reset
-                                            Password</button>
+                                        <a href="{{ route('admin.users.send_reset_link', $user) }}"
+                                            class="btn btn-danger mt-2"
+                                            onclick="return confirm('Are you sure you want to send a password reset link to {{ $user->first_name }}?');">
+                                            <i class="fas fa-key mr-2"></i> Send Reset Password Link
+                                        </a>
                                     </div>
                                 </div>
                             </div>

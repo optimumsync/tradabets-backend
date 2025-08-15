@@ -204,22 +204,6 @@
 </style>
 
 <section class="card card-admin">
-    @if (session('success'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        {{ session('success') }}
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-    @endif
-    @if (session('error'))
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        {{ session('error') }}
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-    @endif
     <header class="card-header d-flex justify-content-between align-items-center">
         <h2 class="card-title">
             Details for {{ $user->first_name }} {{ $user->last_name }}
@@ -228,202 +212,59 @@
             List</a>
     </header>
     <div class="card-body">
+        @if (session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        @endif
+        @if (session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ session('error') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        @endif
         <div class="tab-navigation-wrapper">
             <ul class="nav nav-tabs professional-tabs" id="userTabs" role="tablist">
-                <li class="nav-item"><a class="nav-link active" id="player-details-tab" data-toggle="tab"
-                        href="#player-details" role="tab">Player Details</a></li>
-                <li class="nav-item"><a class="nav-link" id="bet-history-tab" data-toggle="tab" href="#bet-history"
-                        role="tab">Bet History</a></li>
-                <li class="nav-item"><a class="nav-link" id="payment-history-tab" data-toggle="tab"
-                        href="#payment-history" role="tab">Payment History</a></li>
-                <li class="nav-item"><a class="nav-link" id="login-history-tab" data-toggle="tab" href="#login-history"
-                        role="tab">Login History</a></li>
-                <li class="nav-item"><a class="nav-link" id="manage-bonus-tab" data-toggle="tab" href="#manage-bonus"
-                        role="tab">Manage Bonus</a></li>
-                <li class="nav-item"><a class="nav-link" id="bank-details-tab" data-toggle="tab" href="#bank-details"
-                        role="tab">Bank Details</a></li>
+                <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#player-details">Player
+                        Details</a></li>
+                <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#bet-history">Bet History</a></li>
+                <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#payment-history">Payment History</a>
+                </li>
+                <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#login-history">Login History</a></li>
+                <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#manage-bonus">Manage Bonus</a></li>
+                <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#bank-details">Bank Details</a></li>
             </ul>
         </div>
 
         <div class="tab-content py-0" id="userTabsContent">
 
-            {{-- 1. Player Details Tab --}}
             <div class="tab-pane fade show active" id="player-details" role="tabpanel">
-                <div class="player-details-container">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-lg-8">
-                                    <h5 class="detail-section-title">User Information</h5>
-                                    <div class="row detail-item">
-                                        <div class="col-md-4 detail-label"><i class="fas fa-id-card"></i> User ID</div>
-                                        <div class="col-md-8 detail-value">#{{ $user->id }}</div>
-                                    </div>
-                                    <div class="row detail-item">
-                                        <div class="col-md-4 detail-label"><i class="fas fa-user"></i> Full Name</div>
-                                        <div class="col-md-8 detail-value">{{ $user->first_name }}
-                                            {{ $user->last_name }}</div>
-                                    </div>
-                                    <div class="row detail-item">
-                                        <div class="col-md-4 detail-label"><i class="fas fa-envelope"></i> Email Address
-                                        </div>
-                                        <div class="col-md-8 detail-value">{{ $user->email }}</div>
-                                    </div>
-                                    <div class="row detail-item">
-                                        <div class="col-md-4 detail-label"><i class="fas fa-phone"></i> Phone Number
-                                        </div>
-                                        <div class="col-md-8 detail-value">{{ $user->country_code }} {{ $user->phone }}
-                                        </div>
-                                    </div>
-                                    <div class="row detail-item">
-                                        <div class="col-md-4 detail-label"><i class="fas fa-user-shield"></i> User Role
-                                        </div>
-                                        <div class="col-md-8 detail-value"><span
-                                                class="badge badge-primary text-capitalize">{{ $user->role }}</span>
-                                        </div>
-                                    </div>
-                                    <div class="row detail-item">
-                                        <div class="col-md-4 detail-label"><i class="fas fa-clock"></i> Member Since
-                                        </div>
-                                        <div class="col-md-8 detail-value">
-                                            {{ $user->created_at->format('F j, Y, g:i A') }}</div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-4 d-flex align-items-center justify-content-center"
-                                    style="background-color: #f8f9fa; border-radius: 0.25rem;">
-                                    <div class="text-center p-3">
-                                        <h5 class="detail-section-title">Management</h5>
-                                        <p class="text-muted small">Permanently reset the user's password. This action
-                                            cannot be undone.</p>
-                                        <a href="{{ route('admin.users.send_reset_link', $user) }}"
-                                            class="btn btn-danger mt-2"
-                                            onclick="return confirm('Are you sure you want to send a password reset link to {{ $user->first_name }}?');">
-                                            <i class="fas fa-key mr-2"></i> Send Reset Password Link
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                @include('user-list.partials._player-info', ['user' => $user])
             </div>
 
-            {{-- 2. Bet History Tab --}}
             <div class="tab-pane fade" id="bet-history" role="tabpanel">
-                <div class="text-center p-4">
-                    <p class="text-muted">Betting history will be displayed here.</p>
-                </div>
+                @include('user-list.partials._bet-history')
             </div>
 
-            {{-- 3. Payment History Tab --}}
             <div class="tab-pane fade" id="payment-history" role="tabpanel">
-                <h5 class="pt-3">Withdrawals</h5>
-                <div class="table-responsive">
-                    <table class="table table-hover table-striped">
-                        <thead>
-                            <tr>
-                                <th>Amount</th>
-                                <th>Status</th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($user->withdrawals as $withdrawal)
-                            <tr>
-                                <td>{{ $withdrawal->amount }}</td>
-                                <td><span
-                                        class="status-badge {{ strtolower($withdrawal->status) }}">{{ $withdrawal->status }}</span>
-                                </td>
-                                <td>{{ $withdrawal->created_at->format('Y-m-d H:i:s') }}</td>
-                            </tr>
-                            @empty
-                            <tr>
-                                <td colspan="3" class="text-center text-muted">No withdrawal records found.</td>
-                            </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-                <h5 class="mt-4">Deposits</h5>
-                <div class="table-responsive">
-                    <table class="table table-hover table-striped">
-                        <thead>
-                            <tr>
-                                <th>Amount</th>
-                                <th>Status</th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td colspan="3" class="text-center text-muted">No deposit records found.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                @include('user-list.partials._payment-history', ['user' => $user])
             </div>
 
-            {{-- 4. Login History Tab --}}
             <div class="tab-pane fade" id="login-history" role="tabpanel">
-                <div class="text-center p-4">
-                    <p class="text-muted">User login history will be displayed here.</p>
-                </div>
+                @include('user-list.partials._login-history')
             </div>
 
-            {{-- 5. Manage Bonus Tab --}}
             <div class="tab-pane fade" id="manage-bonus" role="tabpanel">
-                <div class="text-center p-4">
-                    <p class="text-muted">Bonus management tools will be available here.</p>
-                </div>
+                @include('user-list.partials._manage-bonus')
             </div>
 
-            {{-- 6. Bank Details Tab --}}
             <div class="tab-pane fade" id="bank-details" role="tabpanel">
-                <div class="d-flex justify-content-end mb-3 pt-3">
-                    <a href="{{ url('/admin/add-user-bank-account?user_id=' . $user->id) }}"
-                        class="btn btn-primary btn-sm">
-                        <i class="fas fa-plus mr-1"></i> Add New Bank Account
-                    </a>
-                </div>
-                <div class="row">
-                    @forelse($user->userBankDetails as $bankAccount)
-                    {{-- MODIFIED: Changed col-md-6 to col-md-4 for a 3-column layout --}}
-                    <div class="col-md-4">
-                        <div
-                            class="bank-account-card {{ $bankAccount->Active_status == 'Active' ? 'active-card' : '' }}">
-                            <div class="bank-account-header">
-                                <div class="bank-name"><i class="fas fa-university mr-2 text-muted"></i>
-                                    {{ $bankAccount->bank_name }}</div>
-                                @if($bankAccount->Active_status == 'Active')
-                                <span class="badge badge-success">ACTIVE</span>
-                                @else
-                                <span class="badge badge-dark">INACTIVE</span>
-                                @endif
-                            </div>
-                            <div class="bank-account-body">
-                                <div class="detail-pair">
-                                    <div class="detail-title">Account Holder Name</div>
-                                    <div class="detail-info">{{ $bankAccount->account_name }}</div>
-                                </div>
-                                <div class="detail-pair">
-                                    <div class="detail-title">Account Number</div>
-                                    <div class="detail-info account-number">{{ $bankAccount->account_number }}</div>
-                                </div>
-                                <div class="detail-pair">
-                                    <div class="detail-title">Date Added</div>
-                                    <div class="detail-info">{{ $bankAccount->created_at->format('M j, Y') }}</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    @empty
-                    <div class="col-12">
-                        <div class="text-center p-4">
-                            <p class="text-muted mb-0">No bank accounts have been added for this user.</p>
-                        </div>
-                    </div>
-                    @endforelse
-                </div>
+                @include('user-list.partials._bank-details', ['user' => $user])
             </div>
 
         </div>
@@ -431,7 +272,6 @@
 </section>
 
 @endsection
-
 @push('scripts')
 <script>
 // Script to handle tab switching

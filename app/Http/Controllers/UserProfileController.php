@@ -153,14 +153,37 @@ class UserProfileController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function showUserDetails($id)
+     public function showUserDetails($id)
     {
-        // MODIFIED: 'deposits' was removed from eager loading in a previous step
-        $user = \App\User::with(['userBankDetails', 'withdrawals'])->findOrFail($id);
+        // Eager load all necessary relationships
+        $user = \App\User::with(['userBankDetails', 'withdrawals', 'deposits'])->findOrFail($id);
 
-        // MODIFIED: The view path now correctly points to the file in the 'user-list' subdirectory
-        return view('user-list.user-details', ['user' => $user]);
+        // --- START: ADDED LOGIC TO CREATE $allTransactions ---
+
+        // Map withdrawals and add a transaction_type attribute for display
+        $withdrawals = $user->withdrawals->map(function ($item) {
+            $item->transaction_type = 'Withdrawal';
+            return $item;
+        });
+
+        // Map deposits and add a transaction_type attribute for display
+        $deposits = $user->deposits->map(function ($item) {
+            $item->transaction_type = 'Deposit';
+            return $item;
+        });
+
+        // Merge the two collections and sort them by creation date, newest first
+        $allTransactions = $withdrawals->merge($deposits)->sortByDesc('created_at');
+
+        // --- END: ADDED LOGIC ---
+
+        // MODIFIED: Pass both the $user and the new $allTransactions variable to the view
+        return view('user-list.user-details', [
+            'user' => $user,
+            'allTransactions' => $allTransactions
+        ]);
     }
+    
 
     /**
      * Export all users to a CSV file, ignoring any filters.

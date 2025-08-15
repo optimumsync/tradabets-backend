@@ -155,13 +155,12 @@ class User extends Authenticatable implements JWTSubject // <-- ADD 'implements 
     /**
      * Get the deposits for the user.
      */
-    public function deposits()
+  public function deposits()
     {
-        // This relationship assumes you have a Deposit model named App\Deposit.
-        // If your model is named differently, please update it here.
-        return $this->hasMany(\App\Deposit::class, 'user_id', 'id');
+        // This relationship now uses your existing Transaction model.
+        // It assumes you have a column to identify the transaction type.
+        return $this->hasMany('App\Models\Transaction', 'user_id', 'id')->where('transaction_type', 'Deposit');
     }
-
 
     public static function select_list()
     {

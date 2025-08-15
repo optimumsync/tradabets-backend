@@ -252,7 +252,11 @@
             </div>
 
             <div class="tab-pane fade" id="payment-history" role="tabpanel">
-                @include('user-list.partials._payment-history', ['user' => $user])
+                {{-- MODIFIED: Add the $allTransactions variable here --}}
+                @include('user-list.partials._payment-history', [
+                'user' => $user,
+                'allTransactions' => $allTransactions
+                ])
             </div>
 
             <div class="tab-pane fade" id="login-history" role="tabpanel">

@@ -97,16 +97,15 @@
                 </thead>
                 <tbody>
                     @forelse($user->deposits as $deposit)
+                    {{-- MODIFIED: Added data-status attribute for JS filtering --}}
                     <tr data-status="{{ strtolower($deposit->status) }}">
                         <td>{{ $deposit->amount }}</td>
                         <td>
-                            @php
-                            $status = strtolower($deposit->status);
-                            $badgeClass = 'status-badge';
-                            if ($status === 'success' || $status === 'deposit') { $badgeClass .= ' success'; }
-                            elseif ($status === 'failed' || $status === 'rejected') { $badgeClass .= ' failed'; }
-                            @endphp
-                            <span class="{{ $badgeClass }}">{{ $deposit->status }}</span>
+                            @if(in_array(strtolower($deposit->status), ['success', 'deposit']))
+                            <span class="status-badge success">{{ $deposit->status }}</span>
+                            @else
+                            <span class="status-badge failed">{{ $deposit->status }}</span>
+                            @endif
                         </td>
                         <td>{{ $deposit->created_at->format('Y-m-d H:i:s') }}</td>
                     </tr>
@@ -165,7 +164,6 @@
     </div>
 </div>
 
-{{-- This script should be included via @push, but for a partial, it can be here --}}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Deposit Filter Logic
@@ -174,17 +172,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
     depositFilterBtns.forEach(btn => {
         btn.addEventListener('click', function() {
-            // Manage active button state
             depositFilterBtns.forEach(b => b.classList.remove('active'));
             this.classList.add('active');
-
             const status = this.getAttribute('data-status');
 
             depositTableRows.forEach(row => {
-                if (status === 'all' || row.getAttribute('data-status') === status) {
-                    row.style.display = ''; // Show row
-                } else {
-                    row.style.display = 'none'; // Hide row
+                // Ensure the row has a data-status attribute before trying to access it
+                if (row.hasAttribute('data-status')) {
+                    if (status === 'all' || row.getAttribute('data-status').includes(
+                            status)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
                 }
             });
         });
@@ -196,17 +196,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
     withdrawalFilterBtns.forEach(btn => {
         btn.addEventListener('click', function() {
-            // Manage active button state
             withdrawalFilterBtns.forEach(b => b.classList.remove('active'));
             this.classList.add('active');
-
             const status = this.getAttribute('data-status');
 
             withdrawalTableRows.forEach(row => {
-                if (status === 'all' || row.getAttribute('data-status') === status) {
-                    row.style.display = ''; // Show row
-                } else {
-                    row.style.display = 'none'; // Hide row
+                if (row.hasAttribute('data-status')) {
+                    if (status === 'all' || row.getAttribute('data-status') ===
+                        status) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
                 }
             });
         });

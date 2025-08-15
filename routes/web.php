@@ -8,6 +8,7 @@ use App\Http\Controllers\SportsController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use Illuminate\Http\Request;
+use App\Http\Controllers\UserPaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,7 +38,7 @@ Route::get('/', function () {
                     ->where('status', 'approved')->exists();
                 $kycPending = KycDocument::where('user_id', $user->id)
                     ->where('status', 'pending')->exists();
-                $hasBankAccount = userBankDetails::where('user_id', $user->id)
+                $hasBankAccount = UserBankDetails::where('user_id', $user->id)
                     ->where('Active_status', 'Active')->exists();
 
                 session([
@@ -182,7 +183,8 @@ Route::middleware($middleware)->get('/document-show/{id}', 'KycController@show')
 
 //user
 Route::middleware($middleware)->get('/user-list', 'UserProfileController@userList')->name('users.list');
-Route::middleware($middleware)->get('/user-details/{id}', 'UserProfileController@showUserDetails')->name('users.details');
+Route::middleware($middleware)->get('/user-details/{id}', 'UserPaymentController@showUserDetails')->name('users.details');
+Route::middleware($middleware)->get('/user-payment-history/{id}', 'UserPaymentController@showPaymentHistory')->name('users.payment.history');
     //Inbox
 /*Route::middleware($middleware)->get('/inbox/mark-all-as-read', 'InboxNotificationController@mark_all_as_read');*/
 Route::middleware($middleware)->get('/inbox/message-view/{notification}', 'InboxNotificationController@mark_all_as_read');

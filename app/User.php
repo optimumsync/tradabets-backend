@@ -11,10 +11,10 @@ use Illuminate\Notifications\Notifiable;
 // use Laravel\Passport\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject; // Keep this import
 
-class User extends Authenticatable implements JWTSubject // <-- ADD 'implements JWTSubject' here
+class User extends Authenticatable implements JWTSubject
 {
     // REMOVE HasApiTokens if you are not using Laravel Passport for any other authentication purposes
-    use Notifiable; // Removed HasApiTokens from here
+    use Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -78,7 +78,7 @@ class User extends Authenticatable implements JWTSubject // <-- ADD 'implements 
      */
     public function getJWTIdentifier()
     {
-        return $this->getKey(); // This will return the value of your primary key (id)
+        return $this->getKey();
     }
 
     /**
@@ -151,22 +151,17 @@ class User extends Authenticatable implements JWTSubject // <-- ADD 'implements 
         return $this->hasOne('App\UserBankDetails', 'user_id', 'id')->where('Active_status', 'Active');
     }
 
-    // ADDED: This method is required for the user details page to load deposits.
-    /**
-     * Get the deposits for the user.
-     */
-    public function deposits()
-    {
-        // This relationship assumes you have a Deposit model named App\Deposit.
-        // If your model is named differently, please update it here.
-        return $this->hasMany(\App\Deposit::class, 'user_id', 'id');
-    }
+    // REMOVED: This method caused the 'App\Deposit' not found error.
+    // public function deposits()
+    // {
+    //     return $this->hasMany(\App\Deposit::class, 'user_id', 'id');
+    // }
 
 
     public static function select_list()
     {
         // get
-        $keyed = User::get()->mapWithKeys(function($item) { // Changed 'user' to 'User' (class name)
+        $keyed = User::get()->mapWithKeys(function($item) {
             return [$item['id'] => $item['first_name'].' '.$item['last_name']];
         });
 

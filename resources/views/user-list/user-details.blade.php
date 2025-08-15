@@ -196,8 +196,15 @@
     background-color: #28a745;
     color: #fff;
 }
-
 .status-badge.rejected {
+    background-color: #dc3545;
+    color: #fff;
+}
+.status-badge.success {
+    background-color: #28a745;
+    color: #fff;
+}
+.status-badge.failed {
     background-color: #dc3545;
     color: #fff;
 }
@@ -218,8 +225,10 @@
                         href="#player-details" role="tab">Player Details</a></li>
                 <li class="nav-item"><a class="nav-link" id="bet-history-tab" data-toggle="tab" href="#bet-history"
                         role="tab">Bet History</a></li>
-                <li class="nav-item"><a class="nav-link" id="payment-history-tab" data-toggle="tab"
-                        href="#payment-history" role="tab">Payment History</a></li>
+                {{-- MODIFIED: Change "Payment History" to a link instead of a tab --}}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('users.payment.history', ['id' => $user->id]) }}">Payment History</a>
+                </li>
                 <li class="nav-item"><a class="nav-link" id="login-history-tab" data-toggle="tab" href="#login-history"
                         role="tab">Login History</a></li>
                 <li class="nav-item"><a class="nav-link" id="manage-bonus-tab" data-toggle="tab" href="#manage-bonus"
@@ -296,69 +305,21 @@
                 </div>
             </div>
 
-            {{-- 3. Payment History Tab --}}
-            <div class="tab-pane fade" id="payment-history" role="tabpanel">
-                <h5 class="pt-3">Withdrawals</h5>
-                <div class="table-responsive">
-                    <table class="table table-hover table-striped">
-                        <thead>
-                            <tr>
-                                <th>Amount</th>
-                                <th>Status</th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($user->withdrawals as $withdrawal)
-                            <tr>
-                                <td>{{ $withdrawal->amount }}</td>
-                                <td><span
-                                        class="status-badge {{ strtolower($withdrawal->status) }}">{{ $withdrawal->status }}</span>
-                                </td>
-                                <td>{{ $withdrawal->created_at->format('Y-m-d H:i:s') }}</td>
-                            </tr>
-                            @empty
-                            <tr>
-                                <td colspan="3" class="text-center text-muted">No withdrawal records found.</td>
-                            </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-                <h5 class="mt-4">Deposits</h5>
-                <div class="table-responsive">
-                    <table class="table table-hover table-striped">
-                        <thead>
-                            <tr>
-                                <th>Amount</th>
-                                <th>Status</th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td colspan="3" class="text-center text-muted">No deposit records found.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            {{-- 4. Login History Tab --}}
+            {{-- 3. Login History Tab --}}
             <div class="tab-pane fade" id="login-history" role="tabpanel">
                 <div class="text-center p-4">
                     <p class="text-muted">User login history will be displayed here.</p>
                 </div>
             </div>
 
-            {{-- 5. Manage Bonus Tab --}}
+            {{-- 4. Manage Bonus Tab --}}
             <div class="tab-pane fade" id="manage-bonus" role="tabpanel">
                 <div class="text-center p-4">
                     <p class="text-muted">Bonus management tools will be available here.</p>
                 </div>
             </div>
 
-            {{-- 6. Bank Details Tab --}}
+            {{-- 5. Bank Details Tab --}}
             <div class="tab-pane fade" id="bank-details" role="tabpanel">
                 <div class="d-flex justify-content-end mb-3 pt-3">
                     <a href="{{ url('/admin/add-user-bank-account?user_id=' . $user->id) }}"
@@ -368,7 +329,6 @@
                 </div>
                 <div class="row">
                     @forelse($user->userBankDetails as $bankAccount)
-                    {{-- MODIFIED: Changed col-md-6 to col-md-4 for a 3-column layout --}}
                     <div class="col-md-4">
                         <div
                             class="bank-account-card {{ $bankAccount->Active_status == 'Active' ? 'active-card' : '' }}">
@@ -417,9 +377,23 @@
 <script>
 // Script to handle tab switching
 $(document).ready(function() {
-    $('#userTabs a').on('click', function(e) {
-        e.preventDefault();
-        $(this).tab('show');
+    // Re-activates the correct tab on page load
+    let activeMainTab = localStorage.getItem('activeMainTab');
+    
+    // Set an array of valid tab IDs
+    const validTabs = ['player-details', 'bet-history', 'login-history', 'manage-bonus', 'bank-details'];
+    
+    if (activeMainTab && validTabs.includes(activeMainTab)) {
+        $('.nav-link[href="#' + activeMainTab + '"]').tab('show');
+    } else {
+        // Fallback for initial page load or if the stored tab is invalid
+        $('#player-details-tab').tab('show');
+    }
+
+    // Stores the active tab in localStorage when a tab is clicked
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+        let tabId = $(e.target).attr('href').substring(1);
+        localStorage.setItem('activeMainTab', tabId);
     });
 });
 </script>

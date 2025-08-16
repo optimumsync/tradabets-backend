@@ -16,6 +16,17 @@ class AdminDashboardController extends Controller
 
     public function dashboard(Request $request)
     {
+        $minutes = config('session.lifetime', 120);
+        $time = Carbon::now()->subMinutes($minutes);
+
+        $sessions = DB::table('sessions')
+            ->where('last_activity', '>', $time->getTimestamp())
+            ->whereNotNull('user_id')
+            ->get();
+
+        $onlineUserIds = $sessions->pluck('user_id')->unique();
+        $onlineUsers = User::whereIn('id', $onlineUserIds)->get();
+        $onlineUsersCount = $onlineUsers->count();
         // --- 1. Set Date Range for Filtering ---
         // Validate incoming dates, or set defaults
         $request->validate([
@@ -57,6 +68,8 @@ class AdminDashboardController extends Controller
             'thisMonthCount' => $thisMonthCount,
             'filterStartDate' => $startDate->format('Y-m-d'),
             'filterEndDate' => $endDate->format('Y-m-d'),
+            'onlineUsers' => $onlineUsers, // <-- Pass online users list
+            'onlineUsersCount' => $onlineUsersCount,
         ]);
     }
 }

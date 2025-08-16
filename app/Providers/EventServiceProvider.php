@@ -5,6 +5,8 @@ namespace App\Providers;
 // Add these imports at the top
 use Illuminate\Auth\Events\Login;
 use App\Listeners\LogSuccessfulLogin;
+use Illuminate\Auth\Events\Logout; 
+use App\Listeners\DeleteSessionOnLogout; 
 
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -26,6 +28,9 @@ class EventServiceProvider extends ServiceProvider
        
         Login::class => [
             LogSuccessfulLogin::class,
+        ],
+        Logout::class => [
+            DeleteSessionOnLogout::class,
         ],
     ];
 

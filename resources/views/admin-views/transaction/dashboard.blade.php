@@ -99,7 +99,16 @@
 
     {{-- Stat Cards Section --}}
     <div class="row">
-        <div class="col-lg-4 col-md-6 mb-4">
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="dashboard-stat-card">
+                <div class="stat-icon"><i class="fas fa-users" style="color: #28a745;"></i></div>
+                <div class="stat-content">
+                    <div class="stat-title">Users Online</div>
+                    <div class="stat-number">{{ $onlineUsersCount }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-4">
             <div class="dashboard-stat-card">
                 <div class="stat-icon"><i class="fas fa-calendar-day"></i></div>
                 <div class="stat-content">
@@ -108,7 +117,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-4 col-md-6 mb-4">
+        <div class="col-lg-3 col-md-6 mb-4">
             <div class="dashboard-stat-card">
                 <div class="stat-icon"><i class="fas fa-calendar-week"></i></div>
                 <div class="stat-content">
@@ -117,7 +126,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-4 col-md-6 mb-4">
+        <div class="col-lg-3 col-md-6 mb-4">
             <div class="dashboard-stat-card">
                 <div class="stat-icon"><i class="fas fa-calendar-alt"></i></div>
                 <div class="stat-content">
@@ -128,14 +137,43 @@
         </div>
     </div>
 
-    {{-- Chart for Daily Registrations --}}
     <div class="row">
-        <div class="col-12 mb-4">
+        {{-- Chart for Daily Registrations --}}
+        <div class="col-lg-8 mb-4">
             <div class="chart-card">
                 <h5 class="mb-3">Daily Registrations</h5>
                 <div style="height: 350px;">
                     <canvas id="dailyRegistrationsChart" data-labels="{{ $registrationLabels->toJson() }}"
                         data-data="{{ $registrationData->toJson() }}"></canvas>
+                </div>
+            </div>
+        </div>
+
+        {{-- Online Users Table --}}
+        <div class="col-lg-4 mb-4">
+            <div class="chart-card">
+                <h5 class="mb-3">Online Users</h5>
+                <div class="table-responsive" style="max-height: 350px; overflow-y: auto;">
+                    <table class="table table-hover table-striped mb-0">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($onlineUsers as $user)
+                            <tr>
+                                <td>{{ $user->first_name }} {{ $user->last_name }}</td>
+                                <td>{{ $user->email }}</td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="2" class="text-center text-muted">No users are currently online.</td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -198,7 +236,6 @@ document.addEventListener("DOMContentLoaded", function() {
                     }
                 },
                 y: {
-                    // MODIFIED: This ensures the y-axis always starts at 0
                     beginAtZero: true,
                     ticks: {
                         stepSize: 1

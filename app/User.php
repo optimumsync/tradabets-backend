@@ -24,7 +24,8 @@ class User extends Authenticatable implements JWTSubject // <-- ADD 'implements 
     protected $table = 'user';
     protected $fillable = [
         'first_name','last_name','email', 'password','country_code','phone','country','date_of_birth','city','state',
-        'token'
+        'token',
+        'is_active' 
     ];
     protected $primaryKey = 'id';
 
@@ -45,6 +46,7 @@ class User extends Authenticatable implements JWTSubject // <-- ADD 'implements 
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'is_active' => 'boolean'
     ];
 
     /**

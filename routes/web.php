@@ -243,3 +243,4 @@ Route::get('/users/export/csv', 'UserProfileController@exportUsersToCsv')->name(
 //ADMIN ROUTES
     Route::middleware($middleware)->get('/admin/users/{user}/send-reset-link', 'ResetPasswordAdminController@sendResetLink')->name('admin.users.send_reset_link');
     Route::middleware($middleware)->get('/admin/dashboard', 'AdminDashboardController@dashboard')->name('admin.dashboard');
+    Route::middleware($middleware)->post('admin/users/{user}/toggle-status', 'UserProfileController@toggleStatus')->name('admin.users.toggle_status');

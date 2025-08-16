@@ -225,4 +225,35 @@ class UserProfileController extends Controller
 
         return Response::stream($callback, 200, $headers);
     }
+    /**
+     * Update the active status of a user.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\User  $user
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function toggleStatus(Request $request, User $user)
+    {
+        // Rule: an admin cannot be deactivated.
+        if ($user->role === 'admin') {
+            return response()->json([
+                'success' => false, 
+                'message' => 'Admin accounts cannot be deactivated.'
+            ], 403); // 403 Forbidden status
+        }
+
+        $request->validate([
+            'is_active' => 'required|boolean',
+        ]);
+
+        try {
+            $user->is_active = $request->is_active;
+            $user->save();
+
+            return response()->json(['success' => true, 'message' => 'User status updated successfully.']);
+        } catch (\Exception $e) {
+            \Log::error('User status update failed for user ID ' . $user->id . ': ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Failed to update user status.'], 500);
+        }
+    }
 }

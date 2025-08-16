@@ -49,22 +49,34 @@ class LoginController extends Controller
     }
 
     // ... your existing userVerify method ...
-    public function userVerify(Request $request){
+     public function userVerify(Request $request)
+    {
         $user_email = User::where('email', '=', $request->username)->first();
         $user_phone = User::where('phone', '=', $request->username)->first();
 
-        if($user_email && Hash::check($request->password, $user_email->password)) {
-            echo 1;
-        } else if($user_phone && Hash::check($request->password, $user_phone->password)) {
-            echo 2;
-        } else {
-            echo 0;
+        // Check if user exists via email
+        if ($user_email && Hash::check($request->password, $user_email->password)) {
+            // Check if the user is active
+            if (!$user_email->is_active) {
+                return response()->json(3); // Status code for deactivated account
+            }
+            return response()->json(1); // Email and password are correct, and user is active
+        } 
+        // Check if user exists via phone
+        else if ($user_phone && Hash::check($request->password, $user_phone->password)) {
+            // Check if the user is active
+            if (!$user_phone->is_active) {
+                return response()->json(3); // Status code for deactivated account
+            }
+            return response()->json(2); // Phone and password are correct, and user is active
+        } 
+        // If credentials do not match
+        else {
+            return response()->json(0); // Incorrect credentials
         }
     }
 
-
-    // ... your existing login method ...
-    public function login(Request $request)
+   public function login(Request $request)
     {
         // Determine if the input is an email or phone for the 'username' field
         $fieldType = filter_var($request->email, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
@@ -74,27 +86,39 @@ class LoginController extends Controller
             'password' => $request->password
         ];
 
-        if (Auth::attempt($credentials, $request->remember)) { // login attempt
-            if (empty(Auth::user()->token)) {
-                $user = User::find(Auth::user()->id);
+        // 1. Attempt to authenticate the user with their credentials
+        if (Auth::attempt($credentials, $request->remember)) {
+            
+            // 2. Get the authenticated user
+            $user = Auth::user();
+
+            // 3. Check if the user's account is active
+            if (!$user->is_active) {
+                // If the account is not active, log the user out immediately
+                Auth::logout();
+                
+                // Redirect back to the login page with an error message
+                return redirect()->back()
+                    ->withInput($request->only('email', 'remember'))
+                    ->withErrors(['email' => 'Your account has been deactivated. Please contact support.']);
+            }
+
+            // 4. If active, proceed with the normal login process
+            if (empty($user->token)) {
                 $user->token = BaseHelper::generateToken();
                 $user->save();
             }
-            // Successful login, AuthenticatesUsers trait will handle redirection
-            // So we don't strictly need to return redirect from here if using the trait's login method
-            // However, your current structure overrides the trait's login method.
-            // The trait would normally handle redirecting to $this->redirectTo.
-            return redirect()->intended($this->redirectTo); // Or redirect('/'); as you had
+            
+            return redirect()->intended($this->redirectTo);
         }
 
-        // If attempt fails, redirect back with error
+        // If authentication fails, redirect back with a generic error
         return redirect()->back()
             ->withInput($request->only('email', 'remember'))
-            ->withErrors(['email' => 'These credentials do not match our records.']); // Or a generic error
+            ->withErrors(['email' => 'These credentials do not match our records.']);
     }
 
 
-    // ... your existing sendMobileEmailOtp method ...
     public function sendMobileEmailOtp(Request $request)
     {
         $userData = User::where('email', '=', $request->email)->orWhere('phone', '=', $request->email)->first();

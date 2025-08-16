@@ -118,12 +118,15 @@
             @forelse($user_list as $user)
             <div class="col-6 col-md-6 col-lg-4 col-xl-3 mb-3">
                 <div class="card card-admin user-card-v2">
+                    @if ($user->role !== 'admin')
                     <div class="card-status-toggle">
                         <div class="switch switch-sm switch-primary">
-                            <input type="checkbox" name="switch" id="switch-{{ $user->id }}" data-plugin-ios-switch
-                                checked="checked" />
+                            <input type="checkbox" name="switch" class="user-status-toggle"
+                                data-user-id="{{ $user->id }}" data-plugin-ios-switch
+                                {{ $user->is_active ? 'checked' : '' }} />
                         </div>
                     </div>
+                    @endif
                     <div class="card-body">
                         <div class="card-user-info">
                             <h4 class="name">{{ $user->first_name }} {{ $user->last_name }}</h4>
@@ -194,14 +197,46 @@
 @push('scripts')
 <script>
 $(document).ready(function() {
-    // iOS Switch Functionality
-    $(document).on('change', '.switch input[type="checkbox"]', function() {
-        const isChecked = $(this).is(':checked');
-        const userId = $(this).attr('id').replace('switch-', '');
-        console.log('User ' + userId + ' status changed to: ' + (isChecked ? 'active' : 'inactive'));
+    // MODIFIED: Reverted to standard browser confirm() and alert()
+    $('.user-status-toggle').on('change', function() {
+        const toggleSwitch = $(this);
+        const userId = toggleSwitch.data('user-id');
+        const url = `/admin/users/${userId}/toggle-status`;
+
+        const intendedStatusIsActive = toggleSwitch.is(':checked');
+        const actionText = intendedStatusIsActive ? 'activate' : 'deactivate';
+
+        // Step 1: Show the browser's confirmation dialog
+        if (confirm(`Are you sure you want to ${actionText} this user's account?`)) {
+            // Step 2: If confirmed, make the AJAX call
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: {
+                    'is_active': intendedStatusIsActive ? 1 : 0,
+                    '_token': '{{ csrf_token() }}'
+                },
+                error: function(xhr) {
+                    // Revert the switch on request failure and show error
+                    toggleSwitch.prop('checked', !intendedStatusIsActive);
+                    toggleSwitch.data('plugin-ios-switch').destroy().iosSwitch();
+
+                    let errorMessage = 'An unexpected error occurred. Please try again.';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    }
+                    alert(errorMessage);
+                    console.error(xhr.responseText);
+                }
+            });
+        } else {
+            // Step 3: If canceled, revert the switch's visual state
+            toggleSwitch.prop('checked', !intendedStatusIsActive);
+            toggleSwitch.data('plugin-ios-switch').destroy().iosSwitch();
+        }
     });
 
-    // Auto-submit the filter form when the 'per_page' dropdown is changed
+    // Auto-submit the filter form
     $('#per_page_select').on('change', function() {
         $('#user-filter-form').submit();
     });

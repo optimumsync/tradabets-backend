@@ -194,4 +194,8 @@ class User extends Authenticatable implements JWTSubject // <-- ADD 'implements 
     {
         return 'id';
     }
+    public function loginHistories()
+    {
+    return $this->hasMany(LoginHistory::class, 'user_id', 'id')->latest('login_at');
+    }
 }

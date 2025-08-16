@@ -156,7 +156,7 @@ class UserProfileController extends Controller
      public function showUserDetails($id)
     {
         // Eager load all necessary relationships
-        $user = \App\User::with(['userBankDetails', 'withdrawals', 'deposits'])->findOrFail($id);
+    $user = \App\User::with(['userBankDetails', 'withdrawals', 'deposits', 'loginHistories'])->findOrFail($id);
 
         // --- START: ADDED LOGIC TO CREATE $allTransactions ---
 

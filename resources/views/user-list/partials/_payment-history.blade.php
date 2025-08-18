@@ -6,7 +6,40 @@
     align-items: center;
     padding-top: 1rem;
 }
+
+.status-badge.success {
+    background-color: #28a745; /* Green */
+    color: #fff;
+    padding: 0.4em 1em;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.8em;
+    text-transform: uppercase;
+    display: inline-block;
+    min-width: 90px;
+    text-align: center;
+}
+
+.status-badge.failed {
+    background-color: #dc3545; /* Red */
+    color: #fff;
+    padding: 0.4em 1em;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.8em;
+    text-transform: uppercase;
+    display: inline-block;
+    min-width: 90px;
+    text-align: center;
+}
+
 </style>
+<div class="payment-history-header">
+    <h5>All Transactions</h5>
+    <a href="{{ route('users.transactions.export.csv', ['user' => $user->id]) }}" class="btn btn-sm btn-success">
+        <i class="fas fa-download mr-2"></i> Export Transactions
+    </a>
+</div>
 
 {{-- Sub-navigation for Payment History --}}
 <div class="tab-navigation-wrapper">
@@ -166,30 +199,30 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Deposit Filter Logic
-    const depositFilterBtns = document.querySelectorAll('.deposit-filter-btn');
-    const depositTableRows = document.querySelectorAll('#deposit-table tbody tr');
+    // ...
+// Deposit Filter Logic
+const depositFilterBtns = document.querySelectorAll('.deposit-filter-btn');
+const depositTableRows = document.querySelectorAll('#deposit-table tbody tr');
 
-    depositFilterBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            depositFilterBtns.forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            const status = this.getAttribute('data-status');
+depositFilterBtns.forEach(btn => {
+    btn.addEventListener('click', function() {
+        depositFilterBtns.forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        const status = this.getAttribute('data-status');
 
-            depositTableRows.forEach(row => {
-                // Ensure the row has a data-status attribute before trying to access it
-                if (row.hasAttribute('data-status')) {
-                    if (status === 'all' || row.getAttribute('data-status').includes(
-                            status)) {
-                        row.style.display = '';
-                    } else {
-                        row.style.display = 'none';
-                    }
+        depositTableRows.forEach(row => {
+            // Ensure the row has a data-status attribute before trying to access it
+            if (row.hasAttribute('data-status')) {
+                // MODIFIED LINE: Check for 'success' or 'deposit' statuses
+                if (status === 'all' || (status === 'success' && (row.getAttribute('data-status') === 'success' || row.getAttribute('data-status') === 'deposit')) || row.getAttribute('data-status') === status) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
                 }
-            });
+            }
         });
     });
-
+});
     // Withdrawal Filter Logic
     const withdrawalFilterBtns = document.querySelectorAll('.withdrawal-filter-btn');
     const withdrawalTableRows = document.querySelectorAll('#withdrawal-table tbody tr');

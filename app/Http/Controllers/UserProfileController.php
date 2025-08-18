@@ -186,11 +186,12 @@ class UserProfileController extends Controller
     
 
     /**
-     * Export all users to a CSV file, ignoring any filters.
+     * Export users to a CSV file, respecting the search and per_page filters.
      *
+     * @param Request $request
      * @return \Symfony\Component\HttpFoundation\StreamedResponse
      */
-    public function exportUsersToCsv()
+    public function exportUsersToCsv(Request $request)
     {
         $headers = [
             "Content-type" => "text/csv",
@@ -200,7 +201,17 @@ class UserProfileController extends Controller
             "Expires" => "0"
         ];
         
-        $users = User::orderBy('id', 'asc')->get();
+        // Use the buildUserQuery method to get the base query with the search filter.
+        $query = $this->buildUserQuery($request);
+        
+        // Apply the 'per_page' limit if it's present in the request.
+        $limit = $request->input('per_page');
+        if ($limit) {
+            $users = $query->orderBy('id', 'asc')->limit($limit)->get();
+        } else {
+            // If no limit is specified, get all users from the filtered query.
+            $users = $query->orderBy('id', 'asc')->get();
+        }
 
         $columns = [
             'id', 'first_name', 'last_name', 'date_of_birth', 'email', 'email_verified_at',
@@ -225,6 +236,67 @@ class UserProfileController extends Controller
 
         return Response::stream($callback, 200, $headers);
     }
+    /**
+ * Export all transactions for a specific user to a CSV file.
+ *
+ * @param  \App\User $user
+ * @return \Symfony\Component\HttpFoundation\StreamedResponse
+ */
+public function exportTransactionsToCsv(User $user)
+{
+    // Eager load all necessary relationships
+    $user->load(['withdrawals', 'deposits']);
+
+    // Map withdrawals and add a transaction_type attribute for display
+    $withdrawals = $user->withdrawals->map(function ($item) {
+        $item->transaction_type = 'Withdrawal';
+        return $item;
+    });
+
+    // Map deposits and add a transaction_type attribute for display
+    $deposits = $user->deposits->map(function ($item) {
+        $item->transaction_type = 'Deposit';
+        return $item;
+    });
+
+    // Merge the two collections and sort them by creation date, newest first
+    $allTransactions = $withdrawals->merge($deposits)->sortByDesc('created_at');
+    
+    $headers = [
+        "Content-type"        => "text/csv",
+        "Content-Disposition" => "attachment; filename=transactions_user_{$user->id}_" . now()->format('Y-m-d_H-i-s') . ".csv",
+        "Pragma"              => "no-cache",
+        "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+        "Expires"             => "0"
+    ];
+
+    $columns = [
+        'ID',
+        'Type',
+        'Amount',
+        'Status',
+        'Date'
+    ];
+
+    $callback = function() use ($allTransactions, $columns) {
+        $file = fopen('php://output', 'w');
+        fputcsv($file, $columns);
+
+        foreach ($allTransactions as $transaction) {
+            fputcsv($file, [
+                $transaction->id,
+                $transaction->transaction_type,
+                $transaction->amount,
+                $transaction->status,
+                $transaction->created_at->format('Y-m-d H:i:s'),
+            ]);
+        }
+
+        fclose($file);
+    };
+
+    return Response::stream($callback, 200, $headers);
+}
     /**
      * Update the active status of a user.
      *

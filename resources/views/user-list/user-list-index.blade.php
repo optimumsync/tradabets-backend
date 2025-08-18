@@ -75,8 +75,8 @@
         <h2 class="card-title">User Management</h2>
         <div>
             <a href="{{ url('kyc-upload-form') }}" class="btn btn-primary">Add KYC of User</a>
-            <a href="{{ route('users.export.csv') }}{{ request()->has('search') ? '?search='.request('search') : '' }}"
-                class="btn btn-success">
+            {{-- MODIFIED: Added id and removed href to use JavaScript for dynamic filtering --}}
+            <a href="#" id="export-users-btn" class="btn btn-success">
                 <i class="fas fa-download mr-2"></i> Export All Users
             </a>
         </div>
@@ -239,6 +239,35 @@ $(document).ready(function() {
     // Auto-submit the filter form
     $('#per_page_select').on('change', function() {
         $('#user-filter-form').submit();
+    });
+
+    // NEW: Dynamic export button URL
+    $('#export-users-btn').on('click', function(e) {
+        e.preventDefault();
+        
+        // Get the current search and per_page values
+        const search = $('input[name="search"]').val();
+        const perPage = $('#per_page_select').val();
+
+        // Construct the base URL
+        let url = '{{ route('users.export.csv') }}';
+        let params = {};
+
+        // Add parameters if they exist
+        if (search) {
+            params.search = search;
+        }
+        if (perPage) {
+            params.per_page = perPage;
+        }
+
+        // Build the final URL with query string
+        if (Object.keys(params).length > 0) {
+            url += '?' + $.param(params);
+        }
+
+        // Redirect to the new URL to start the download
+        window.location.href = url;
     });
 });
 </script>

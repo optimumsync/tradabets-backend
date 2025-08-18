@@ -7,25 +7,16 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class DeleteSessionOnLogout
 {
     /**
-     * The current request instance.
-     *
-     * @var \Illuminate\Http\Request
+     * We no longer need the request object, so the constructor can be removed or left empty.
      */
-    protected $request;
-
-    /**
-     * Create the event listener.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return void
-     */
-    public function __construct(Request $request)
+    public function __construct()
     {
-        $this->request = $request;
+        //
     }
 
     /**
@@ -36,12 +27,13 @@ class DeleteSessionOnLogout
      */
     public function handle(Logout $event)
     {
-        // Get the ID of the current session
-        $sessionId = $this->request->session()->getId();
-
-        // Delete the session record from the database
-        if ($sessionId) {
-            DB::table('sessions')->where('id', $sessionId)->delete();
+        // The Logout event contains the user who is logging out.
+        // We will delete all sessions belonging to this user.
+        if ($event->user) {
+            DB::table('sessions')->where('user_id', $event->user->id)->delete();
+            
+            // Optional: You can keep this log for confirmation.
+            Log::info('Deleted all database sessions for user ID: ' . $event->user->id);
         }
     }
 }

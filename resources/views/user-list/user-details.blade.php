@@ -264,7 +264,10 @@
             </div>
 
             <div class="tab-pane fade" id="manage-bonus" role="tabpanel">
-                @include('user-list.partials._manage-bonus')
+                @include('user-list.partials._manage-bonus', [
+                'user' => $user,
+                'bonuses' => $bonuses
+                ])
             </div>
 
             <div class="tab-pane fade" id="bank-details" role="tabpanel">

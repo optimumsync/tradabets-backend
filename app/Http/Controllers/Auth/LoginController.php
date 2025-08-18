@@ -14,6 +14,7 @@ use App\User; // Or App\Models\User if you are using Laravel 8+ and moved it
 use Illuminate\Http\Request;
 use App\Token;
 use Twilio\Rest\Client;
+use Illuminate\Support\Facades\DB;
 
 class LoginController extends Controller
 {

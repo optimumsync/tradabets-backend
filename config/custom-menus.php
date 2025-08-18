@@ -276,8 +276,8 @@ return [
             'prepend-title' => '<img class="user-menu-icons" src="/themes/admin/img/betlistcashout.png"/>',
        ],
          [
-            'uri' => '/charts',
-            'title' => '<span>Charts</span>',
+            'uri' => '/admin/bonuses',
+            'title' => '<span>Manage Bonus</span>',
             'prepend-title' => '<img class="user-menu-icons" src="/themes/admin/img/betlistcashout.png"/>',
        ],
        [

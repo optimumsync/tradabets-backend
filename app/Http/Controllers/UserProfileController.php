@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use App\User;
 use Illuminate\Support\Facades\Response;
-
+use App\Bonus;
 class UserProfileController extends Controller
 {
     /**
@@ -157,8 +157,8 @@ class UserProfileController extends Controller
     {
         // Eager load all necessary relationships
     $user = \App\User::with(['userBankDetails', 'withdrawals', 'deposits', 'loginHistories'])->findOrFail($id);
+    $bonuses = Bonus::orderBy('name')->get();
 
-        // --- START: ADDED LOGIC TO CREATE $allTransactions ---
 
         // Map withdrawals and add a transaction_type attribute for display
         $withdrawals = $user->withdrawals->map(function ($item) {
@@ -180,7 +180,8 @@ class UserProfileController extends Controller
         // MODIFIED: Pass both the $user and the new $allTransactions variable to the view
         return view('user-list.user-details', [
             'user' => $user,
-            'allTransactions' => $allTransactions
+            'allTransactions' => $allTransactions,
+            'bonuses' => $bonuses 
         ]);
     }
     

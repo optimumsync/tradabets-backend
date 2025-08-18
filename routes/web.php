@@ -63,9 +63,8 @@ Route::get('/', function () {
                 }
 
                 return view('tradabet-home-page-new', ['iframe_url' => $iframe_url]);
-
             } catch (\Exception $e) {
-                \Log::error('Home page error: '.$e->getMessage());
+                \Log::error('Home page error: ' . $e->getMessage());
                 return view('tradabet-home-page-new', ['iframe_url' => $defaultUrl]);
             }
         }
@@ -100,16 +99,16 @@ Route::get('auth/google/callback', 'Auth\LoginController@handleGoogleCallback');
 Route::get('/complete-registration', 'Auth\RegisterController@completeRegistration');
 Route::post('register', 'Auth\RegisterController@register');
 
-Route::get('register',function(){
-    return redirect ('/');
+Route::get('register', function () {
+    return redirect('/');
 })->name('register');
 
-Route::get('login',function(){
-    return redirect ('/');
+Route::get('login', function () {
+    return redirect('/');
 })->name('login');
 
 Route::post('login', 'Auth\LoginController@login');
-Route::post('login/userVerify','Auth\LoginController@userVerify')->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
+Route::post('login/userVerify', 'Auth\LoginController@userVerify')->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
 Route::get('/emailCheck/{postdata}', 'Auth\RegisterController@emailCheck');
 Route::get('/phoneCheck/{postdata}', 'Auth\RegisterController@phoneCheck');
 
@@ -128,28 +127,28 @@ Route::get('email/resend', 'Auth\VerificationController@resend')->name('verifica
 //Route::post('register', 'Auth\RegisterController@showRegistrationForm');
 
 
-Auth::routes(['register'=>false,'login'=>false]);
+Auth::routes(['register' => false, 'login' => false]);
 
-$middleware=['auth','verified'];
+$middleware = ['auth', 'verified'];
 
 Route::middleware($middleware)->get('/home', 'HomeController@index')->name('home');
-    //Bet-list
+//Bet-list
 Route::middleware($middleware)->get('/betlist', 'BetListController@index');
 Route::middleware($middleware)->get('/betlist-cashout', 'BetListController@betListCashout');
-    //Bonus
+//Bonus
 Route::middleware($middleware)->get('/active-bonus', 'BonusController@index');
 Route::middleware($middleware)->get('/bonus-transaction-list', 'BonusController@bonusTransactionList');
-    //Rewards
+//Rewards
 Route::middleware($middleware)->get('/rewards', 'RewardsController@index');
-    //Transaction List
+//Transaction List
 Route::middleware($middleware)->get('/transaction', 'TransactionController@index');
-    //Deposit
+//Deposit
 Route::middleware($middleware)->get('/deposits', 'TransactionController@deposit')->name('deposits');
 Route::middleware($middleware)->get('/deposit-form', 'TransactionController@depositForm')->name('deposit-form-add');
 Route::middleware($middleware)->get('/deposit-form/{amount}', 'TransactionController@depositForm')->name('deposit-form-add');
 Route::middleware($middleware)->get('/payment-request', 'PaymentController@payment');
 Route::middleware($middleware)->get('/deposit-request', 'PaymentController@depositAmount')->name('deposit-request');
-    //Withdraw
+//Withdraw
 Route::middleware($middleware)->get('/withdraw', 'TransactionController@withdraw')->name('withdraw');
 Route::middleware($middleware)->get('/withdraw-request-form', 'TransactionController@withdrawForm')->name('withdraw-request-form');
 Route::middleware($middleware)->get('/withdraw-request', 'TransactionController@withdrawAmount');
@@ -165,13 +164,13 @@ Route::middleware($middleware)->post('/withdraw-request-bulk-reject', 'Transacti
 Route::middleware($middleware)->get('/transaction-report', 'TransactionController@paystackPaymentReport');
 Route::middleware($middleware)->get('/withdraw-list', 'WithdrawListController@index')->name('withdraw.list');
 
-    // user profile
+// user profile
 Route::middleware($middleware)->get('users/profile/{user}', 'UserProfileController@show');
 Route::middleware($middleware)->get('users/profile/{user}/edit', 'UserProfileController@edit');
 Route::middleware($middleware)->patch('users/profile/{user}', 'UserProfileController@update');
-Route::middleware($middleware)->get('/developers','DevelopersController@index');
+Route::middleware($middleware)->get('/developers', 'DevelopersController@index');
 
-    //KYC
+//KYC
 Route::middleware($middleware)->get('/document-upload', 'KycController@index');
 Route::middleware($middleware)->get('/kyc-upload-form', 'KycController@documentShow');
 Route::middleware($middleware)->post('/kyc-upload', 'KycController@upload');
@@ -183,25 +182,25 @@ Route::middleware($middleware)->get('/document-show/{id}', 'KycController@show')
 //user
 Route::middleware($middleware)->get('/user-list', 'UserProfileController@userList')->name('users.list');
 Route::middleware($middleware)->get('/user-details/{id}', 'UserProfileController@showUserDetails')->name('users.details');
-    //Inbox
+//Inbox
 /*Route::middleware($middleware)->get('/inbox/mark-all-as-read', 'InboxNotificationController@mark_all_as_read');*/
 Route::middleware($middleware)->get('/inbox/message-view/{notification}', 'InboxNotificationController@mark_all_as_read');
 Route::middleware($middleware)->resource('inbox', 'InboxNotificationController')->parameters([
-        'inbox' => 'inbox_notification'
-    ]);
+    'inbox' => 'inbox_notification'
+]);
 
-    // Paystack accept payment
+// Paystack accept payment
 Route::post('/pay', 'PaymentController@redirectToGateway')->name('pay');
 Route::get('/payment/callback', 'PaymentController@handleGatewayCallback')->name('paystack.callback');
 
-    //BankAccounts
+//BankAccounts
 Route::middleware($middleware)->get('/bank-accounts', 'BankAccountsController@index')->name('bank_account');
 Route::middleware($middleware)->get('/add-bank-account', 'BankAccountsController@addAccount')->name('add-bank-account');
 Route::middleware($middleware)->post('/add_account', 'BankAccountsController@add');
 
 Route::middleware($middleware)->get('/activate-account/{id}', 'BankAccountsController@activateAccount');
 
-    //Paystack transfers
+//Paystack transfers
 Route::middleware($middleware)->get('/activate-account/{}', 'BankAccountsController@activateAccount');
 Route::middleware($middleware)->get('/initiate_transaction/{id}', 'PaystackController@initiate');
 Route::middleware($middleware)->get('/finalize_transfer', 'PaystackController@finalizeTransfer')->name('otp');
@@ -209,7 +208,7 @@ Route::middleware($middleware)->get('/finalize_transfer', 'PaystackController@fi
 Route::middleware($middleware)->post('/bulkTransfer', 'PaystackController@bulkTransfer');
 Route::middleware($middleware)->get('/updateBanksList', 'BankAccountsController@updateBanksList');
 
-    // Flutterwave
+// Flutterwave
 // The route that the button calls to initialize payment
 Route::post('/flutterwave_pay', 'PaymentController@initialize')->name('flutterwave_pay');
 // The callback url after a payment
@@ -237,11 +236,21 @@ Route::get('/test-otp-send', function (Request $request) {
 // Add this route to your web.php file
 Route::get('/users/export/csv', 'UserProfileController@exportUsersToCsv')->name('users.export.csv');
 
-    Route::get('/admin/add-user-bank-account', 'BankAccountsController@showAdminAddForm');
-    Route::post('/admin/add-user-bank-account', 'BankAccountsController@storeAdminBankAccount');
+Route::get('/admin/add-user-bank-account', 'BankAccountsController@showAdminAddForm');
+Route::post('/admin/add-user-bank-account', 'BankAccountsController@storeAdminBankAccount');
 
 //ADMIN ROUTES
-    Route::middleware($middleware)->get('/admin/users/{user}/send-reset-link', 'ResetPasswordAdminController@sendResetLink')->name('admin.users.send_reset_link');
-    Route::middleware($middleware)->get('/admin/dashboard', 'AdminDashboardController@dashboard')->name('admin.dashboard');
-    Route::middleware($middleware)->post('admin/users/{user}/toggle-status', 'UserProfileController@toggleStatus')->name('admin.users.toggle_status');
-    Route::middleware($middleware)->get('/admin/online-users', 'OnlineUsersController@index')->name('admin.online_users');
+Route::middleware($middleware)->get('/admin/users/{user}/send-reset-link', 'ResetPasswordAdminController@sendResetLink')->name('admin.users.send_reset_link');
+Route::middleware($middleware)->get('/admin/dashboard', 'AdminDashboardController@dashboard')->name('admin.dashboard');
+Route::middleware($middleware)->post('admin/users/{user}/toggle-status', 'UserProfileController@toggleStatus')->name('admin.users.toggle_status');
+Route::middleware($middleware)->get('/admin/online-users', 'OnlineUsersController@index')->name('admin.online_users');
+
+Route::middleware($middleware)->group(function () {
+    // Routes for managing bonus types
+    Route::get('/admin/bonuses', 'UserBonusController@index')->name('admin.bonuses.index');
+    Route::post('/admin/bonuses', 'UserBonusController@store')->name('admin.bonuses.store');
+    Route::delete('/admin/bonuses/{bonus}', 'UserBonusController@destroy')->name('admin.bonuses.destroy');
+
+    // Route for assigning bonuses to users
+    Route::post('/admin/user-bonuses/award', 'UserBonusController@awardBonus')->name('admin.user-bonuses.award');
+});

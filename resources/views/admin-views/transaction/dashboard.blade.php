@@ -72,33 +72,12 @@
     color: #343a40 !important;
 }
 </style>
-{{-- END: Dedicated CSS --}}
+
 
 <section>
-    <div class="row align-items-center">
-        <div class="col-md-5">
-            <h2 class="card-title">Player Registration Overview</h2>
-        </div>
-        {{-- START: Date Range Filter Form --}}
-        <div class="col-md-7">
-            <form action="{{ route('admin.dashboard') }}" method="GET" class="form-inline float-md-right">
-                <div class="form-group mb-2">
-                    <label for="start_date" class="sr-only">Start Date</label>
-                    <input type="text" class="form-control" id="start_date" name="start_date"
-                        value="{{ $filterStartDate }}">
-                </div>
-                <div class="form-group mx-sm-3 mb-2">
-                    <label for="end_date" class="sr-only">End Date</label>
-                    <input type="text" class="form-control" id="end_date" name="end_date" value="{{ $filterEndDate }}">
-                </div>
-                <button type="submit" class="btn btn-primary mb-2"><i class="fas fa-filter mr-1"></i> Filter</button>
-            </form>
-        </div>
-    </div>
-    <hr class="mb-4">
 
     {{-- Stat Cards Section --}}
-    <div class="row">
+    <div class="row mt-4">
         <div class="col-lg-3 col-md-6 mb-4">
             <div class="dashboard-stat-card">
                 <div class="stat-icon"><i class="fas fa-users" style="color: #28a745;"></i></div>
@@ -141,7 +120,23 @@
         {{-- Chart for Daily Registrations --}}
         <div class="col-lg-8 mb-4">
             <div class="chart-card">
-                <h5 class="mb-3">Daily Registrations</h5>
+                {{-- MODIFIED: Title and Filter Form are now inside the card --}}
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">Daily Registrations</h5>
+                    <form action="{{ route('admin.dashboard') }}" method="GET" class="form-inline">
+                        <div class="form-group">
+                            <input type="text" class="form-control form-control-sm" id="start_date" name="start_date"
+                                value="{{ $filterStartDate }}">
+                        </div>
+                        <div class="form-group mx-2">
+                            <input type="text" class="form-control form-control-sm" id="end_date" name="end_date"
+                                value="{{ $filterEndDate }}">
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-filter mr-1"></i>
+                            Filter</button>
+                    </form>
+                </div>
+                {{-- END MODIFICATION --}}
                 <div style="height: 350px;">
                     <canvas id="dailyRegistrationsChart" data-labels="{{ $registrationLabels->toJson() }}"
                         data-data="{{ $registrationData->toJson() }}"></canvas>
